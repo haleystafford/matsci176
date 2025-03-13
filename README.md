@@ -21,8 +21,8 @@ The project uses the WM811K dataset, which contains over 800,000 wafer maps with
 ## Repository Structure
 - `main.ipynb`: A comprehensive notebook that includes data loading, preprocessing, model training, evaluation and results visualization
 - `README.md`: An overview of the project and setup instructions
-- `requirements.txt file`: A list of all Python dependences
-- `hyperparameter_search_results.csv`: A csv file containing the architectures and performance of every randomly-generated CNN
+- `requirements.txt`: A list of all Python dependencies
+- `hyperparameter_search_results.csv`: A CSV file containing the architectures and performance of every randomly generated CNN
 
 
 ## Installation
@@ -45,37 +45,42 @@ To download the WM811K dataset from Kaggle, ensure you have KaggleHub installed.
 ```bash
 path = kagglehub.dataset_download("qingyi/wm811k-wafer-map")
 ```
+## Methodology
 
-### Data Preprocessing Steps in `main.ipynb`
+### Data Preprocessing
 1. **Data Cleaning:** Non-defective wafer maps are removed from the dataset.
 2. **Resizing:** Wafer maps are resized to a consistent shape of (39, 39) using bilinear interpolation.
 3. **Data Augmentation:** To address class imbalance, transformations like rotation, flipping, and zooming are applied to underrepresented classes.
 
+### Classification Methods
+1. **Naive Bayes:** Initially explored as a baseline, achieving ~51.6% accuracy.
+2. **Convolutional Neural Network (CNN):** A 3-layer CNN was implemented and optimized using random hyperparameter search.
+
+### CNN Hyperparameter Optimization
+The following hyperparameters were explored:
+- Filter Sizes: (32, 64, 128), (64, 128, 256)
+- Kernel Sizes: ((3, 3), (3, 3), (3, 3)), ((5, 5), (3, 3), (3, 3))
+- Activation Functions: relu, tanh, sigmoid
+- Pooling Types: Max, Average
+- Dropout Rates: 0.2, 0.5, 0.7
+- Dense Units: 128, 256
+
+### Results
+The results of the hyperparameter search, including test accuracy and other performance metrics, are detailed in the `hyperparameter_search_results.csv` file. Ablation tests reveal ReLU and average pooling are the best configurations for test accuracy.
+
 ## Usage Guide
-1. Open `main.ipynb` in Jupyter Notebook or any compatible environment.
-2. Follow these steps within the notebook:
--     Data Preprocessing: Load and preprocess the WM811K dataset.
--     Naive Bayes Classification: Run the baseline Naive Bayes classifier.
--     CNN Training: Train a 3-layer CNN with randomly sampled hyperparameters.
--     Results Analysis: Evaluate model performance and review visualizations.
+1. Ensure all required libraries are installed.
+3. Open `main.ipynb` in Jupyter Notebook or any compatible environment.
+4. Load the WM-811K dataset using the provided code.
+5. Run the code for each of the following sections in the notebook:
+  - System set-up: Import libraries.
+  - Data Acquisition: Import WM-811K data from Kaggle.
+  - Data Preprocessing: Load and preprocess the data.
+  - Classification Methods: Run the baseline Naive Bayes classifier and Convolutional Neural Network models.
+  - Results: Evaluate model performance and review visualizations.
 
-
-
-## `main.ipynb` Walkthrough
-**1. Data Preprocessing:** This section explains how to load, clean and preprocess the WM-811K dataset. Since the wafer maps do not have a consistent size we resized wafer maps using bilinear interpolation . This method stretches the wafer map while keeping features recognizable, creating slight distortions. We also performed data augmentation by increasing the sample size of each class to 75% of the size of the largest class.
-
-**2. Classification Method 1 – Naive Bayes**: We initially explored  Naive Bayes as a baseline method for classifying the wafer maps. This model assumes that the features in the data (i.e. wafer maps) are independent and follow a Gaussian distribution. Although these assumptions might not perfectly hold for the wafer maps, Naive Bayes performed very well in classifying some failure types and terribly in others. This method was explored to evaluate the data before exploring more complex methods.
-
-**3. Classification Method 2 – Convolutional Neural Network (CNN)**: In this section, we aimed to optimize a 3-layer CNN model to maximize classification accuracy. We performed random hyperparameter search on the following search space:
-
-# Hyperparameter Search Space
-filter_sizes_list = [(32, 64, 128), (64, 128, 256)]
-kernel_sizes_list = [((3, 3), (3, 3), (3, 3)), ((5, 5), (3, 3), (3, 3))]
-activation_list = ['relu', 'tanh', 'sigmoid']
-pool_type_list = ['Max', 'Average']
-dropout_rates = [0.2, 0.5, 0.7]
-dense_units_list = [64, 128, 256]
-
-
-**4. Results**: The code outputs the random hyperparameter search results in a csv file. Ablation tests reveal ReLU and average pooling are the best configurations for test accuracy. Future work should build models using these parameters and changing the other stuff to find the best combination of parameters for the 3-layer CNN.
-
+## Future Work
+- Implement parameter optimization techniques such as Bayesian optimization.
+- Explore adding attention layers, such as self-attention or spatial attention, to the CNN architecture.
+- Implement a grid search to systematically evaluate all possible combinations of hyperparameters.
+- Investigate deeper CNN architectures or pre-trained models (e.g., ResNet, EfficientNet) to leverage transfer learning for better performance.
